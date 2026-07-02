@@ -11,7 +11,7 @@ def ejecutar_pipeline_entrenamiento():
     # 2. Cargar arquitectura de hardware y adaptadores
     modelo, tokenizer = model.preparar_modelo_y_tokenizador()
 
-    # 3. Configurar entorno de SFT con la solución comunitaria
+    # 3. Configurar entorno de SFT
     configuracion_entrenamiento = SFTConfig(
         output_dir=config.OUTPUT_DIR,
         dataset_text_field="text",
@@ -37,7 +37,7 @@ def ejecutar_pipeline_entrenamiento():
         args=configuracion_entrenamiento
     )
 
-    print("\n-> Iniciando entrenamiento oficial en la GPU...")
+    print("\n-> Iniciando entrenamiento en la GPU...")
     trainer.train()
     print("✔ Entrenamiento finalizado con exito.")
 

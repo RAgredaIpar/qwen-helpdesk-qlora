@@ -1,9 +1,8 @@
 import torch
 
-# Identificadores de Hugging Face e Infraestructura
+# Identificadores de Hugging Face e Infraestructura Local
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 DATASET_ID = "bitext/bitext-customer-support-llm-chatbot-training-dataset"
-DRIVE_DIR = "/content/drive/MyDrive/Proyecto_UPAO_HelpDesk_Finetuned"
 OUTPUT_DIR = "./resultados_helpdesk"
 
 # Formato de Plantilla (ChatML)
@@ -21,7 +20,7 @@ GRADIENT_ACCUMULATION = 4
 LEARNING_RATE = 2e-4
 EPOCHS = 1
 
-# Configuración de precisión para optimizar VRAM en GPUs de consumo
+# Configuración de precisión para optimizar VRAM
 COMPUTE_DTYPE = torch.float16
 USE_BF16 = True
 USE_FP16 = False
