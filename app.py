@@ -1,4 +1,3 @@
-# app.py
 import gradio as gr
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
@@ -37,14 +36,24 @@ for name, param in modelo.named_parameters():
         param.data = param.data.to(dtype=config.COMPUTE_DTYPE)
 
 
-# 3. Motor de inferencia de IA
+# 3. Motor de inferencia de IA con gestion opcional de contexto
 def responder_helpdesk(mensaje_usuario, historial):
     try:
-        prompt_estricto = (
-            f"<|im_start|>system\n{config.PROMPT_SISTEMA}{config.EOS_TOKEN}\n"
-            f"<|im_start|>user\n{mensaje_usuario}{config.EOS_TOKEN}\n"
-            "<|im_start|>assistant\n"
-        )
+        # Inicializar el prompt con la instruccion del sistema
+        prompt_estricto = f"<|im_start|>system\n{config.PROMPT_SISTEMA}{config.EOS_TOKEN}\n"
+
+        # Si el historial esta activo y contiene mensajes, los concatena en ChatML
+        if config.HABILITAR_HISTORIAL and historial:
+            for turno in historial:
+                usuario_antiguo = turno[0]
+                asistente_antiguo = turno[1]
+                prompt_estricto += (
+                    f"<|im_start|>user\n{usuario_antiguo}{config.EOS_TOKEN}\n"
+                    f"<|im_start|>assistant\n{asistente_antiguo}{config.EOS_TOKEN}\n"
+                )
+
+        # Añadir el mensaje actual
+        prompt_estricto += f"<|im_start|>user\n{mensaje_usuario}{config.EOS_TOKEN}\n<|im_start|>assistant\n"
 
         inputs = tokenizer(prompt_estricto, return_tensors="pt", add_special_tokens=False).to("cuda")
 
