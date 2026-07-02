@@ -24,3 +24,6 @@ EPOCHS = 1
 COMPUTE_DTYPE = torch.float16
 USE_BF16 = True
 USE_FP16 = False
+
+# Configuración de Experiencia de Usuario
+HABILITAR_HISTORIAL = True
