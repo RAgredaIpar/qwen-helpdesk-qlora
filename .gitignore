@@ -1,0 +1,9 @@
+.venv/
+venv/
+.idea/
+.vscode/
+resultados_helpdesk/
+.gradio/
+__pycache__/
+*.safetensors
+*.bin
