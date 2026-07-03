@@ -36,26 +36,38 @@ for name, param in modelo.named_parameters():
         param.data = param.data.to(dtype=config.COMPUTE_DTYPE)
 
 
-# 3. Motor de inferencia de IA con gestion opcional de contexto
+# 3. Motor de inferencia de IA con gestion dinamica de hardware
 def responder_helpdesk(mensaje_usuario, historial):
     try:
-        # Inicializar el prompt con la instruccion del sistema
+        dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
+
         prompt_estricto = f"<|im_start|>system\n{config.PROMPT_SISTEMA}{config.EOS_TOKEN}\n"
 
-        # Si el historial esta activo y contiene mensajes, los concatena en ChatML
         if config.HABILITAR_HISTORIAL and historial:
             for turno in historial:
-                usuario_antiguo = turno[0]
-                asistente_antiguo = turno[1]
-                prompt_estricto += (
-                    f"<|im_start|>user\n{usuario_antiguo}{config.EOS_TOKEN}\n"
-                    f"<|im_start|>assistant\n{asistente_antiguo}{config.EOS_TOKEN}\n"
-                )
+                # Gradio puede pasar los turnos como diccionarios o tuplas según la versión
+                if isinstance(turno, dict):
+                    user_msg = turno.get("user", "")
+                    assistant_msg = turno.get("assistant", "")
+                else:
+                    user_msg = turno[0]
+                    assistant_msg = turno[1]
 
-        # Añadir el mensaje actual
+                if user_msg and assistant_msg:
+                    prompt_estricto += (
+                        f"<|im_start|>user\n{user_msg}{config.EOS_TOKEN}\n"
+                        f"<|im_start|>assistant\n{assistant_msg}{config.EOS_TOKEN}\n"
+                    )
+
+        # Añadir el turno actual del usuario
         prompt_estricto += f"<|im_start|>user\n{mensaje_usuario}{config.EOS_TOKEN}\n<|im_start|>assistant\n"
 
-        inputs = tokenizer(prompt_estricto, return_tensors="pt", add_special_tokens=False).to("cuda")
+        inputs = tokenizer(prompt_estricto, return_tensors="pt", add_special_tokens=False).to(dispositivo)
+
+        # Extraer el ID dinámico del token de parada
+        eos_id = tokenizer.convert_tokens_to_ids(config.EOS_TOKEN)
+        if eos_id is None or isinstance(eos_id, list):
+            eos_id = tokenizer.eos_token_id
 
         with torch.no_grad():
             outputs = modelo.generate(
@@ -66,21 +78,33 @@ def responder_helpdesk(mensaje_usuario, historial):
                 do_sample=True,
                 top_p=0.85,
                 repetition_penalty=1.15,
-                eos_token_id=tokenizer.encode(config.EOS_TOKEN)[0],
-                pad_token_id=tokenizer.encode(config.EOS_TOKEN)[0]
+                eos_token_id=eos_id,
+                pad_token_id=eos_id
             )
 
         respuesta_completa = tokenizer.decode(outputs[0], skip_special_tokens=False)
-        respuesta_limpia = respuesta_completa.split("<|im_start|>assistant\n")[-1].replace(config.EOS_TOKEN, "").strip()
+
+        # Si la respuesta contiene el tag del asistente, cortamos ahí de forma segura
+        if "<|im_start|>assistant\n" in respuesta_completa:
+            respuesta_limpia = respuesta_completa.split("<|im_start|>assistant\n")[-1]
+        else:
+            # Si por alguna razón no está, cortamos usando la longitud del input original
+            input_len = inputs["input_ids"].shape[1]
+            respuesta_limpia = tokenizer.decode(outputs[0][input_len:], skip_special_tokens=True)
+
+        # Remover tokens de basura o parada residuales
+        respuesta_limpia = respuesta_limpia.replace(config.EOS_TOKEN, "").strip()
 
         return respuesta_limpia
 
     except Exception as e:
-        return f"Error en el motor de IA: {str(e)}"
-
+        # Esto te imprimirá el tipo de error exacto en la caja de Gradio si algo falla
+        import traceback
+        print(traceback.format_exc())
+        return f"Error en el motor de IA: {type(e).__name__} - {str(e)}"
 
 # 4. Construccion de la UI con Gradio
-with gr.Blocks(theme=gr.themes.Soft()) as interfaz:
+with gr.Blocks() as interfaz:
     gr.Markdown("# IT HelpDesk AI Assistant - UPAO")
     gr.Markdown("Anfitrion: Rodrigo Agreda | Modelo: Qwen2.5-1.5B Fine-Tuned (QLoRA)")
 
@@ -96,4 +120,4 @@ with gr.Blocks(theme=gr.themes.Soft()) as interfaz:
     )
 
 if __name__ == "__main__":
-    interfaz.launch(share=True, debug=False)
+    interfaz.launch(share=False, debug=False, theme=gr.themes.Soft())
