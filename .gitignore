@@ -3,6 +3,7 @@ venv/
 .idea/
 .vscode/
 resultados_helpdesk/
+modelo_qwen_helpdesk_unificado/
 .gradio/
 __pycache__/
 *.safetensors
