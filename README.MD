@@ -1,6 +1,6 @@
 # Agent Autonomo de IT HelpDesk con Qwen 2.5 (Fine-Tuning QLoRA)
 
-Este proyecto implementa el Fine-Tuning supervisado (SFT) del modelo de lenguaje de codigo abierto Qwen2.5-1.5B-Instruct, optimizado especificamente para la resolucion de consultas de soporte tecnico de TI en idioma ingles. La arquitectura fue diseñada para ejecutarse eficientemente en entornos de hardware restringidos mediante tecnicas de cuantizacion de bajo nivel, asegurando la portabilidad del sistema.
+Este proyecto implementa el Fine-Tuning supervisado (SFT) del modelo de lenguaje de codigo abierto Qwen2.5-1.5B-Instruct, optimizado especificamente para la resolucion de consultas de soporte tecnico de TI en la Universidad Privada Antenor Orrego (UPAO). Tras el entrenamiento, el sistema fue exportado y empaquetado en formato GGUF para ejecutarse de forma local y eficiente mediante Ollama, conectandose a una API de orquestacion en Python para la gestion avanzada del ciclo de vida de la conversacion.
 
 ## 1. Arquitectura del Repositorio
 
@@ -17,27 +17,27 @@ proyecto-qwen-helpdesk/
 │   └── evaluate.py             # Pipeline de calculo de metricas de validacion
 │
 ├── train.py                    # Script maestro de ejecucion del entrenamiento
-├── app.py                      # Interfaz grafica interactiva mediante Gradio
+├── api.py                      # Servidor backend de orquestacion con FastAPI y Ollama
+├── test_api.py                 # Script de pruebas automatizadas multi-turno para la API
+├── manual_upao.txt             # Dataset controlado de conocimiento institucional (Base para RAG)
+├── Modelfile                   # Archivo de configuracion y empaquetamiento para Ollama
 ├── requirements.txt            # Dependencias del entorno de ejecucion
 └── README.md                   # Documentacion tecnica del sistema
 ```
 
 ## 2. Configuracion Metodologica y Datos de Control
 
-El modelo fue entrenado utilizando una muestra optimizada de 4,000 registros extraidos del conjunto de datos oficial de soporte al cliente de Bitext. Para garantizar la integridad de las pruebas, se aislo un grupo de control de 200 registros completamente nuevos y no vistos por el modelo durante la fase de ajuste.
-
-Toda la estructura de datos fue alineada bajo la plantilla de formato ChatML utilizando tokens especificos de parada para evitar comportamientos iterativos indefinidos o bucles en la inferencia:
-
+El modelo fue entrenado utilizando una muestra optimizada de registros extraidos del conjunto de datos oficial de soporte al cliente, alineados con la identidad de la UPAO. Toda la estructura de inferencia fue congelada bajo la plantilla ChatML nativa de Ollama utilizando tokens estrictos de parada para asegurar cortes de generacion precisos en produccion:
 ```text
-&lt;|im_start|&gt;system
-[Instruccion del Sistema]&lt;|im_end|&gt;
-&lt;|im_start|&gt;user
-[Consulta Tecnica del Usuario]&lt;|im_end|&gt;
-&lt;|im_start|&gt;assistant
-[Respuesta Estructurada del Agente]&lt;|im_end|&gt;
+<|im_start|>system
+[Instruccion del Sistema de la UPAO]<|im_end|>
+<|im_start|>user
+[Consulta Tecnica del Usuario]<|im_end|>
+<|im_start|>assistant
+[Respuesta Estructurada del Agente]<|im_end|>
 ```
 
-La ingenieria de precision del modelo fuerza una precision homogenea en los tensores mediante la sincronizacion estricta de tipos de datos en Float16 (fp16) y la desactivacion de escaladores externos, eliminando desbordamientos numericos en los gradientes.
+La ingenieria de precision del modelo en el entorno local fuerza una inferencia homogenea reduciendo la temperatura a 0.1 para mitigar alucinaciones y mitigar desvios fuera del ambito tecnico de la universidad.
 
 ## 3. Reporte de Validacion Cientifica
 
@@ -51,25 +51,44 @@ Dictamen Tecnico: El valor de perplejidad cercano a 2.0 y una perdida inferior a
 
 ## 4. Manual de Ejecucion del Sistema
 
-### Instalar Dependencias
-Para configurar el entorno virtual e instalar los paquetes del ecosistema de Hugging Face y ejecucion, ejecute:
+### Configuración del Entorno Local
+Para preparar tu entorno virtual de Python e instalar las dependencias necesarias para la API, los servicios web y los conectores de Ollama, ejecuta en tu terminal:}
 ```bash
 pip install -r requirements.txt
 ```
 
-### Ejecutar Entrenamiento
-Para procesar el dataset, inyectar los adaptadores LoRA, entrenar y evaluar el modelo de forma automatica, ejecute el script maestro:
+### PASO 1: Fase de Entrenamiento (Laboratorio)
+Si deseas volver a entrenar el modelo desde cero o actualizar sus adaptadores LoRA con un nuevo dataset:
+
+1. Asegúrate de configurar los hiperparámetros en el archivo src/config.py.
+
+2. Ejecuta el pipeline maestro de entrenamiento corriendo:
 ```bash
 python train.py
 ```
-Los artefactos y pesos optimizados se almacenaran localmente en el directorio configurado en los resultados del proyecto.
+3. El script descargará el conjunto de datos de control, aplicará la cuantización en 4 bits, inyectará LoRA, guardará los pesos finales y exportará el reporte de validación científica.
 
-### Lanzar Interfaz Web de Produccion
-El sistema cuenta con una bandera de control en `src/config.py` denominada `HABILITAR_HISTORIAL`. 
-* Si se establece en `True`, el sistema activara la concatenacion dinamica de contexto en formato ChatML para mantener la memoria del chat.
-* Si se establece en `False`, el sistema procesara las consultas de forma aislada para optimizar el uso de VRAM en la GPU.
+### PASO 2: Exportación y Cuantización a GGUF
+Una vez completado el entrenamiento, para poder ejecutar el modelo de forma ultrarrápida en el hardware local:
+1. Convierte los pesos guardados de Hugging Face al formato binario unificado GGUF utilizando las herramientas de compilación de llama.cpp.
 
-Para levantar el servidor local e interactuar con la interfaz grafica de usuario, ejecute:
+2. Mueve el archivo resultante (modelo_qwen_helpdesk_fp16.gguf) directamente a la raíz de este proyecto.
+
+### Compilación y Empaquetado en Ollama
+Con el archivo GGUF en la raíz, ejecuta el manifiesto de configuración para crear el contenedor local con sus políticas estrictas de idioma, ámbito de HelpDesk y tokens de parada:
 ```bash
-python app.py
+ollama create qwen-upao-helpdesk -f ./Modelfile
+```
+
+### PASO 4: Lanzamiento de la API de Orquestación
+Para encender el microservicio de FastAPI que se encargará de gestionar los buffers de memoria histórica de los usuarios en segundo plano y evitar la amnesia del modelo, ejecuta:
+```bash
+python api.py
+```
+El servidor backend quedará escuchando peticiones en el puerto local: http://127.0.0.1:8000
+
+### PASO 5: Suite de Pruebas Multi-Turno
+Para verificar que el sistema procesa el historial correctamente sin olvidar el contexto y medir la latencia exacta de inferencia por cada ráfaga de texto, abre una nueva terminal y ejecuta:
+```bash
+python test_api.py
 ```
