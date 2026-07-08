@@ -5,5 +5,9 @@ accelerate>=1.2.0
 bitsandbytes>=0.45.0
 datasets>=3.2.0
 gradio>=5.0.0
-torch>=2.1.0
+torch>=2.1.0 # Instalar la version compatible con tu versión de CUDA (o CPU, si no utilizas GPU).
 requests
+fastapi
+pydantic
+ollama
+uvicorn

@@ -1,0 +1,23 @@
+========================================================================
+GUÍA DE SOPORTE TÉCNICO DE TI - UNIVERSIDAD PRIVADA ANTENOR ORREGO (UPAO)
+Edición Oficial: Año 2026
+========================================================================
+
+1. ACCESO AL CORREO INSTITUCIONAL UPAO
+- Problema: El estudiante o docente no puede ingresar a su correo de la universidad.
+- Solución Oficial: Todo usuario debe ingresar directamente a la plataforma oficial a través del enlace web único: https://correo.upao.edu.pe.
+- Credenciales: El usuario es el código de estudiante (ej. 000123456) seguido de "@upao.edu.pe". La contraseña inicial por defecto es el número de DNI del usuario.
+- Soporte: Si el sistema indica "Cuenta bloqueada" o "Error de autenticación", el usuario debe comunicarse inmediatamente a la Central Telefónica de HelpDesk UPAO al número directo 044-604000 (Anexo de Soporte Correo: 2210) o enviar un mensaje al correo verificado: soportecorreo@upao.edu.pe.
+
+2. CONEXIÓN A LA RED WI-FI DEL CAMPUS
+- Problema: Problemas para conectarse al internet inalámbrico dentro de la universidad (Sedes Trujillo y Piura).
+- Nombre de la Red (SSID Oficial): La red inalámbrica oficial para toda la comunidad académica se llama exactamente "UPAO_Campus_Seguro".
+- Método de Conexión: Al seleccionar la red, el dispositivo solicitará un método de autenticación. Se debe elegir "WPA2-Enterprise" o "PEAP".
+- Usuario y Clave: El usuario es el correo institucional completo y la contraseña es la misma clave del Campus Virtual.
+- Soporte Técnico: Si la conexión se cae, sale "Error de IP" o no conecta, el usuario no debe modificar el router. Debe acercarse presencialmente a la Oficina de Soporte de TI (Pabellón H, Piso 2 en el campus Trujillo) o llamar al 044-604000 (Anexo de Soporte Conectividad: 2220).
+
+3. RESTABLECIMIENTO DE CONTRASEÑA DEL CAMPUS VIRTUAL
+- Problema: Olvido o pérdida de contraseña para ingresar al Campus Virtual UPAO.
+- Proceso de Recuperación: El usuario debe ingresar a la web de login del Campus Virtual y hacer clic estrictamente en el botón flotante "Restablecer mediante Token SMS". El sistema enviará un código de 6 dígitos al teléfono celular registrado en su ficha de matrícula.
+- Enlace Directo: https://campusvirtual.upao.edu.pe/recuperar
+- Restricción de Seguridad: Por normativas institucionales, el soporte técnico de TI TIENE PROHIBIDO dar contraseñas por teléfono o correo electrónico. Todo cambio requiere validación por SMS o de forma presencial con el documento de identidad físico.

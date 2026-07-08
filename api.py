@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
 import ollama
+import uvicorn
 
 app = FastAPI(
     title="API de Orquestación - HelpDesk UPAO",
@@ -15,13 +16,6 @@ class UserMessage(BaseModel):
 
 historiales_memoria: Dict[str, List[Dict[str, str]]] = {}
 
-# Prompt de respaldo
-SYSTEM_PROMPT = (
-    "Eres el asistente oficial de HelpDesk de TI de la Universidad Privada Antenor Orrego (UPAO). "
-    "Responde siempre en español de forma nativa, educada y concisa. Si te hablan en inglés, adáptate. "
-    "Proporcione soluciones técnicas estructuradas paso a paso."
-)
-
 @app.post("/chat")
 async def chat_endpoint(payload: UserMessage):
     try:
@@ -33,15 +27,11 @@ async def chat_endpoint(payload: UserMessage):
 
         historiales_memoria[user_id].append({"role": "user", "content": nuevo_mensaje})
 
-        mensajes_para_ollama = [
-            {"role": "system", "content": SYSTEM_PROMPT}
-        ] + historiales_memoria[user_id]
-
         start_time = time.time()
 
         response = ollama.chat(
             model='qwen-upao-helpdesk',
-            messages=mensajes_para_ollama,
+            messages=historiales_memoria[user_id],
             options={
                 "temperature": 0.1,
                 "top_p": 0.75
@@ -64,5 +54,4 @@ async def chat_endpoint(payload: UserMessage):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
