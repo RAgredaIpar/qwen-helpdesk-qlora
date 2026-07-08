@@ -6,3 +6,4 @@ bitsandbytes>=0.45.0
 datasets>=3.2.0
 gradio>=5.0.0
 torch>=2.1.0
+requests
