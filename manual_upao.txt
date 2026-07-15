@@ -1,6 +1,6 @@
 ========================================================================
 GUÍA DE SOPORTE TÉCNICO DE TI - UNIVERSIDAD PRIVADA ANTENOR ORREGO (UPAO)
-Edición Oficial: Año 2026
+Edición Oficial de Soporte y Servicios: Año 2026
 ========================================================================
 
 1. ACCESO AL CORREO INSTITUCIONAL UPAO
@@ -21,3 +21,20 @@ Edición Oficial: Año 2026
 - Proceso de Recuperación: El usuario debe ingresar a la web de login del Campus Virtual y hacer clic estrictamente en el botón flotante "Restablecer mediante Token SMS". El sistema enviará un código de 6 dígitos al teléfono celular registrado en su ficha de matrícula.
 - Enlace Directo: https://campusvirtual.upao.edu.pe/recuperar
 - Restricción de Seguridad: Por normativas institucionales, el soporte técnico de TI TIENE PROHIBIDO dar contraseñas por teléfono o correo electrónico. Todo cambio requiere validación por SMS o de forma presencial con el documento de identidad físico.
+
+4. PLATAFORMA CANVAS (AULA VIRTUAL) Y VIDEOCONFERENCIAS ZOM
+- Problema: El alumno no visualiza sus cursos matriculados en Canvas o no puede ingresar a las clases en vivo por Zoom.
+- Sincronización de Cursos: La matrícula académica tarda hasta 24 horas en reflejarse en la plataforma Canvas. Si pasaron más de 24 horas y falta un curso, el alumno debe ingresar a su Campus Virtual, ir a "Mis Cursos" y presionar el botón "Forzar Sincronización Canvas".
+- Acceso a Zoom Universitario: Las licencias de Zoom para clases virtuales están vinculadas al correo institucional. Si sale el error "Esta cuenta de Zoom no pertenece a la organización", el usuario debe cerrar sesión en su aplicación Zoom personal e iniciar sesión usando el método "Ingresar con SSO", escribiendo el dominio de la universidad: "upao-edu-pe".
+- Contacto de Soporte Canvas: Enviar correo detallando código y captura de pantalla a: soportecanvas@upao.edu.pe (Anexo de atención interna: 2245).
+
+5. INSTALACIÓN DE SOFTWARE ACADÉMICO LICENCIADO (OFFICE 365, MATLAB, SPSS)
+- Beneficio de Office Gratis: Todo alumno matriculado activo de la UPAO tiene derecho a instalar el paquete de Microsoft Office 365 ProPlus gratis en hasta 5 dispositivos personales (Laptops, tablets o celulares).
+- Pasos para Office: Ingresar a https://portal.office.com con las credenciales del correo institucional UPAO, buscar el botón azul "Instalar aplicaciones de Office" en la esquina superior derecha y ejecutar el instalador descargado.
+- Descarga de Software de Ingeniería (Matlab / SPSS / AutoCAD): Los instaladores y códigos de activación licenciados se encuentran en el Campus Virtual, en la sección de "Herramientas de Software de Alumnos". El soporte de TI no realiza instalaciones en laptops de alumnos de forma presencial por políticas de garantía de hardware.
+
+6. ACCESO A LA BIBLIOTECA VIRTUAL Y REPOSITORIO DE TESIS
+- Problema: No se pueden abrir los libros electrónicos de las bases de datos (Ebsco, Scopus, ProQuest).
+- Acceso Oficial: Se debe ingresar únicamente a través del enlace de la biblioteca integrada: https://biblioteca.upao.edu.pe.
+- Credenciales: Autenticarse utilizando el mismo usuario y contraseña del Campus Virtual.
+- Soporte de Biblioteca: Si el sistema indica "Usuario no habilitado", significa que el alumno tiene alguna mora por devolución tardía de libros físicos o no ha actualizado su ficha médica. Comunicarse al correo: bibliotecasoporte@upao.edu.pe (Anexo: 2310).
