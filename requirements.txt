@@ -11,3 +11,5 @@ fastapi
 pydantic
 ollama
 uvicorn
+chromadb
+sentence-transformers
