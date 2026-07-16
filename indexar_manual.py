@@ -23,7 +23,9 @@ ids = []
 chunk_id = 1
 for sec in secciones:
     sec_clean = sec.strip()
-    if sec_clean and not sec_clean.startswith("====") and ("1." in sec_clean or "2." in sec_clean or "3." in sec_clean):
+
+    # VALIDACIÓN ACTUALIZADA: Ahora permite secciones del 1 al 6 para el manual extendido
+    if sec_clean and not sec_clean.startswith("====") and any(f"{i}." in sec_clean for i in range(1, 7)):
         chunks.append(sec_clean)
         metadata.append({"source": MANUAL_PATH, "section_id": chunk_id})
         ids.append(f"chunk_{chunk_id}")
@@ -37,7 +39,15 @@ embeddings = embedding_model.encode(chunks).tolist()
 print(f"Guardando vectores en la base de datos local: '{DB_DIR}/'...")
 chroma_client = chromadb.PersistentClient(path=DB_DIR)
 
-coleccion = chroma_client.get_or_create_collection(name="manual_upao_vectors")
+# Modificación de seguridad: Eliminamos la colección vieja para que no se dupliquen
+# o mezclen los registros viejos con los nuevos al re-ejecutar.
+try:
+    chroma_client.delete_collection(name="manual_upao_vectors")
+    print("Colección antigua eliminada para evitar duplicados.")
+except Exception:
+    pass
+
+coleccion = chroma_client.create_collection(name="manual_upao_vectors")
 
 coleccion.add(
     embeddings=embeddings,
